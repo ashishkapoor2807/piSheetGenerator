@@ -17,19 +17,46 @@
     </tr>
     <tr>
       <th></th>
-      <th class="background1">Box/Pallet (1)</th>
-      <th class="background1">Box/Pallet (2)</th>
+      <th class="background1">Box/Pallet (Type 1)</th>
+      <th class="background1">Box/Pallet (Type 2)</th>
       <th class="background1">Sqmt/Box</th>
       <th class="background1">Weight/Box (Kg)</th>
       <th class="background1">Pieces/Box</th>
       <th class="background1">Box/Container</th>
-      <th class="background2">Required Sqmt</th>
-      <th class="background2">Required Pieces</th>
-      <th class="background2">Required Boxes</th>
-      <th class="background5">Pallets (1)</th>
-      <th class="background5">Pallets (2)</th>
-      <th class="background3">Actual Boxes</th>
-      <th class="background3">Actual Sqmt</th>
+      <th class="background2">
+        <input
+          type="radio"
+          id="type1"
+          name="requirement"
+          value="sqmt"
+          [(ngModel)]="clientRequirement"
+          (ngModelChange)="changeType($event)"
+        /><label for="type1">Required Sqmt</label>
+      </th>
+      <th class="background2">
+        <input
+          type="radio"
+          id="type2"
+          name="requirement"
+          value="pieces"
+          [(ngModel)]="clientRequirement"
+          (ngModelChange)="changeType($event)"
+        /><label for="type2">Required Pieces</label>
+      </th>
+      <th class="background2">
+        <input
+          type="radio"
+          id="type3"
+          name="requirement"
+          value="boxes"
+          [(ngModel)]="clientRequirement"
+          (ngModelChange)="changeType($event)"
+        /><label for="type3">Required Boxes</label>
+      </th>
+      <th class="background5">Pallets (Type 1)</th>
+      <th class="background5">Pallets (Type 2)</th>
+      <th class="background3">Calculated Boxes</th>
+      <th class="background3">Calculated Sqmt</th>
       <th class="background3">Percentage (%)</th>
       <th class="background3">Weight (Kg)</th>
       <th class="background3">Containers</th>
@@ -129,11 +156,11 @@
         />
       </td>
       <td class="background3">{{ row.calcBoxes || 0 }}</td>
-      <td class="background3">{{ row.calcSqmt || 0 | number: "1.2-2" }}</td>
+      <td class="background3">{{ row.calcSqmt || 0 }}</td>
       <td class="background3">{{ row.calcPercentage || 0 }}%</td>
       <td class="background3">{{ row.calcWeight || 0 }}</td>
       <td class="background3">
-        {{ row.calcContainers || 0 | number: "1.2-2" }}
+        {{ row.calcContainers || 0 }}
       </td>
     </tr>
     <tr>
@@ -146,57 +173,33 @@
       <th class="background4">{{ dataTotal.totalSqmt }}</th>
       <th class="background4">{{ dataTotal.totalPieces }}</th>
       <th class="background4">{{ dataTotal.totalBoxes }}</th>
-      <th class="background4">{{ dataTotal.totalPallets1 }}</th>
-      <th class="background4">{{ dataTotal.totalPallets2 }}</th>
-      <th class="background4">{{ dataTotal.totalCalcBoxes }}</th>
-      <th class="background4">{{ dataTotal.totalCalcSqmt }}</th>
+      <th class="background4">
+        {{ dataTotal.totalPallets1 }}
+      </th>
+      <th class="background4">
+        {{ dataTotal.totalPallets2 }}
+      </th>
+      <th class="background4">
+        {{ dataTotal.totalCalcBoxes }}
+      </th>
+      <th class="background4">
+        {{ dataTotal.totalCalcSqmt }}
+      </th>
       <th class="background4">{{ dataTotal.totalCalcPercentage }}%</th>
-      <th class="background4">{{ dataTotal.totalCalcWeight }}</th>
-      <th class="background4">{{ dataTotal.totalCalcContainers }}</th>
+      <th class="background4">
+        {{ dataTotal.totalCalcWeight }}
+      </th>
+      <th class="background4">
+        {{ dataTotal.totalCalcContainers }}
+      </th>
     </tr>
   </table>
-  <!-- <table>
-    <tr>
-      <th></th>
-      <th>Req. Sqmt.</th>
-      <th>Req. Pieces</th>
-      <th>Req. Boxes</th>
-      <th>Box/Pallet</th>
-      <th>Calc. Pallet</th>
-      <th>Box/Pallet</th>
-      <th>Calc. Pallet</th>
-      <th>Calc. Sqmt.</th>
-      <th>Calc. Boxes</th>
-      <th>Calc. Weight</th>
-      <th>Calc. Percentage</th>
-    </tr>
-    <tr *ngFor="let row of output; let i = index">
-      <td>{{ i + 1 }}</td>
-      <td>{{ row.targetSqmt || "" }}</td>
-      <td>{{ row.targetPieces || "" }}</td>
-      <td>{{ row.targetBoxes || "" }}</td>
-      <td>{{ row.boxPerPallet1 || "" }}</td>
-      <td>{{ row.palletPerContainer1 || "" }}</td>
-      <td>{{ row.boxPerPallet2 || "" }}</td>
-      <td>{{ row.palletPerContainer2 || "" }}</td>
-      <td>{{ row.calculatedSqmt || "" }}</td>
-      <td>{{ row.calculatedBoxes || "" }}</td>
-      <td>{{ row.calculatedWeight || "" }}</td>
-      <td>{{ row.calculatedPercentage || "" }}%</td>
-    </tr>
-    <tr>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th>{{ outputTotals.totalBoxes }}</th>
-      <th>{{ outputTotals.totalWeight }}</th>
-      <th>{{ outputTotals.totalPercentage }}%</th>
-    </tr>
-  </table> -->
+  <div style="padding: 8px 0px">
+    <div style="display: inline-block; width: 50%">
+      <b>Total Rows: {{ dataRows.length }}</b>
+    </div>
+    <div style="display: inline-block; width: 50%; text-align: right">
+      <button (click)="onDownloadClick()">Download CSV</button>
+    </div>
+  </div>
 </div>
