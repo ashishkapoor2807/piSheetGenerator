@@ -1,0 +1,202 @@
+<div>
+  <table>
+    <tr>
+      <th></th>
+      <th colspan="6" class="background1" style="text-align: center">
+        DEFAULT INFORMATION
+      </th>
+      <th colspan="3" class="background2" style="text-align: center">
+        CLIENT REQUIREMENTS
+      </th>
+      <th colspan="2" class="background5" style="text-align: center">
+        ADJUSTMENTS
+      </th>
+      <th colspan="5" class="background3" style="text-align: center">
+        CALCULATIONS
+      </th>
+    </tr>
+    <tr>
+      <th></th>
+      <th class="background1">Box/Pallet (1)</th>
+      <th class="background1">Box/Pallet (2)</th>
+      <th class="background1">Sqmt/Box</th>
+      <th class="background1">Weight/Box (Kg)</th>
+      <th class="background1">Pieces/Box</th>
+      <th class="background1">Box/Container</th>
+      <th class="background2">Required Sqmt</th>
+      <th class="background2">Required Pieces</th>
+      <th class="background2">Required Boxes</th>
+      <th class="background5">Pallets (1)</th>
+      <th class="background5">Pallets (2)</th>
+      <th class="background3">Actual Boxes</th>
+      <th class="background3">Actual Sqmt</th>
+      <th class="background3">Percentage (%)</th>
+      <th class="background3">Weight (Kg)</th>
+      <th class="background3">Containers</th>
+    </tr>
+    <tr *ngFor="let row of dataRows; let i = index">
+      <td>
+        <button style="font-size: 20px; color: red" (click)="onDeleteClick(i)">
+          &times;
+        </button>
+      </td>
+      <td class="background1">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.boxPerPallet1"
+          (ngModelChange)="dataChanged(i, 'boxPerPallet1', $event)"
+        />
+      </td>
+      <td class="background1">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.boxPerPallet2"
+          (ngModelChange)="dataChanged(i, 'boxPerPallet2', $event)"
+        />
+      </td>
+      <td class="background1">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.sqmtPerBox"
+          (ngModelChange)="dataChanged(i, 'sqmtPerBox', $event)"
+        />
+      </td>
+      <td class="background1">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.weightPerBox"
+          (ngModelChange)="dataChanged(i, 'weightPerBox', $event)"
+        />
+      </td>
+      <td class="background1">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.piecesPerBox"
+          (ngModelChange)="dataChanged(i, 'piecesPerBox', $event)"
+        />
+      </td>
+      <td class="background1">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.boxPerContainer"
+          (ngModelChange)="dataChanged(i, 'boxPerContainer', $event)"
+        />
+      </td>
+      <td class="background2">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.sqmt"
+          (ngModelChange)="dataChanged(i, 'sqmt', $event)"
+        />
+      </td>
+      <td class="background2">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.pieces"
+          (ngModelChange)="dataChanged(i, 'pieces', $event)"
+        />
+      </td>
+      <td class="background2">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.boxes"
+          (ngModelChange)="dataChanged(i, 'boxes', $event)"
+        />
+      </td>
+      <td class="background5">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.pallets1"
+          (ngModelChange)="dataChanged(i, 'pallets1', $event)"
+        />
+      </td>
+      <td class="background5">
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="row.pallets2"
+          (ngModelChange)="dataChanged(i, 'pallets2', $event)"
+        />
+      </td>
+      <td class="background3">{{ row.calcBoxes || 0 }}</td>
+      <td class="background3">{{ row.calcSqmt || 0 | number: "1.2-2" }}</td>
+      <td class="background3">{{ row.calcPercentage || 0 }}%</td>
+      <td class="background3">{{ row.calcWeight || 0 }}</td>
+      <td class="background3">
+        {{ row.calcContainers || 0 | number: "1.2-2" }}
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <button style="font-size: 20px; color: green" (click)="onAddClick()">
+          +
+        </button>
+      </th>
+      <th class="background4" style="text-align: center" colspan="6">TOTAL</th>
+      <th class="background4">{{ dataTotal.totalSqmt }}</th>
+      <th class="background4">{{ dataTotal.totalPieces }}</th>
+      <th class="background4">{{ dataTotal.totalBoxes }}</th>
+      <th class="background4">{{ dataTotal.totalPallets1 }}</th>
+      <th class="background4">{{ dataTotal.totalPallets2 }}</th>
+      <th class="background4">{{ dataTotal.totalCalcBoxes }}</th>
+      <th class="background4">{{ dataTotal.totalCalcSqmt }}</th>
+      <th class="background4">{{ dataTotal.totalCalcPercentage }}%</th>
+      <th class="background4">{{ dataTotal.totalCalcWeight }}</th>
+      <th class="background4">{{ dataTotal.totalCalcContainers }}</th>
+    </tr>
+  </table>
+  <!-- <table>
+    <tr>
+      <th></th>
+      <th>Req. Sqmt.</th>
+      <th>Req. Pieces</th>
+      <th>Req. Boxes</th>
+      <th>Box/Pallet</th>
+      <th>Calc. Pallet</th>
+      <th>Box/Pallet</th>
+      <th>Calc. Pallet</th>
+      <th>Calc. Sqmt.</th>
+      <th>Calc. Boxes</th>
+      <th>Calc. Weight</th>
+      <th>Calc. Percentage</th>
+    </tr>
+    <tr *ngFor="let row of output; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ row.targetSqmt || "" }}</td>
+      <td>{{ row.targetPieces || "" }}</td>
+      <td>{{ row.targetBoxes || "" }}</td>
+      <td>{{ row.boxPerPallet1 || "" }}</td>
+      <td>{{ row.palletPerContainer1 || "" }}</td>
+      <td>{{ row.boxPerPallet2 || "" }}</td>
+      <td>{{ row.palletPerContainer2 || "" }}</td>
+      <td>{{ row.calculatedSqmt || "" }}</td>
+      <td>{{ row.calculatedBoxes || "" }}</td>
+      <td>{{ row.calculatedWeight || "" }}</td>
+      <td>{{ row.calculatedPercentage || "" }}%</td>
+    </tr>
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th>{{ outputTotals.totalBoxes }}</th>
+      <th>{{ outputTotals.totalWeight }}</th>
+      <th>{{ outputTotals.totalPercentage }}%</th>
+    </tr>
+  </table> -->
+</div>

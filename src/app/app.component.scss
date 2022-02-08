@@ -1,0 +1,40 @@
+table {
+  width: 100%;
+  border-spacing: 0px;
+  td,
+  th {
+    padding: 8px;
+    border: 1px solid #888888;
+    text-align: left;
+  }
+
+  th {
+    background: #eeeeee;
+  }
+
+  .background1 {
+    background: #d1c4e9;
+  }
+
+  .background2 {
+    background: #b3e5fc;
+  }
+
+  .background3 {
+    background: #c8e6c9;
+    text-align: right;
+  }
+
+  .background4 {
+    background: #ffecb3;
+  }
+
+  .background5 {
+    background: #ffccbc;
+  }
+
+  input {
+    width: 60px;
+    padding: 4px;
+  }
+}
