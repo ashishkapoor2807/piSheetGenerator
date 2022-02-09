@@ -43,4 +43,16 @@ table {
   input[type="radio"] {
     margin: 0px;
   }
+
+  small {
+    font-size: 10px;
+    font-style: italic;
+  }
+}
+
+.white-table {
+  th,
+  td {
+    background: #ffffff !important;
+  }
 }

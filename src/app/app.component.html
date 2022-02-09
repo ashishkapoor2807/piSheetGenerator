@@ -1,5 +1,5 @@
 <div>
-  <table>
+  <table class="white-table">
     <tr>
       <th></th>
       <th colspan="6" class="background1" style="text-align: center">
@@ -155,12 +155,32 @@
           (ngModelChange)="dataChanged(i, 'pallets2', $event)"
         />
       </td>
-      <td class="background3">{{ row.calcBoxes || 0 }}</td>
-      <td class="background3">{{ row.calcSqmt || 0 }}</td>
-      <td class="background3">{{ row.calcPercentage || 0 }}%</td>
-      <td class="background3">{{ row.calcWeight || 0 }}</td>
       <td class="background3">
-        {{ row.calcContainers || 0 }}
+        <div>{{ row.calcBoxes || 0 }}</div>
+        <small
+          >{{ row.boxPerPallet1 }}&times;{{ row.pallets1 }} +
+          {{ row.boxPerPallet2 }}&times;{{ row.pallets2 }}
+        </small>
+      </td>
+      <td class="background3">
+        <div>{{ row.calcSqmt || 0 }}</div>
+        <small>{{ row.calcBoxes }}&times;{{ row.sqmtPerBox }} </small>
+      </td>
+      <td class="background3">
+        <div>{{ row.calcPercentage || 0 }}%</div>
+        <small
+          >({{ row.calcBoxes }}/{{ row.boxPerContainer }})&times;100
+        </small>
+      </td>
+      <td class="background3">
+        <div>{{ row.calcWeight || 0 }}</div>
+        <small>{{ row.calcBoxes }}&times;{{ row.weightPerBox }} </small>
+      </td>
+      <td class="background3">
+        <div>
+          {{ row.calcContainers || 0 }}
+        </div>
+        <small>{{ row.calcBoxes }}/{{ row.boxPerContainer }} </small>
       </td>
     </tr>
     <tr>
