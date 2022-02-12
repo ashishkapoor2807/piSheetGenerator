@@ -4,34 +4,39 @@ table {
   td,
   th {
     padding: 8px;
-    border: 1px solid #888888;
+    border: 1px solid #ccc;
     text-align: left;
   }
 
   th {
-    background: #eeeeee;
+    // background: #eeeeee;
+    // border: 1px solid #000;
   }
 
   .background1 {
-    background: #d1c4e9;
+    // background: #d1c4e9;
   }
 
   .background2 {
-    background: #b3e5fc;
+    // background: #b3e5fc;
   }
 
   .background3 {
-    background: #c8e6c9;
+    // background: #c8e6c9;
     text-align: right;
   }
 
   .background4 {
-    background: #ffecb3;
+    // background: #ffecb3;
     text-align: right;
   }
 
   .background5 {
-    background: #ffccbc;
+    // background: #ffccbc;
+  }
+
+  .dark-border {
+    border: 1px solid #000;
   }
 
   input[type="text"],
@@ -42,17 +47,43 @@ table {
 
   input[type="radio"] {
     margin: 0px;
+    margin-right: 4px;
   }
 
   small {
     font-size: 10px;
     font-style: italic;
   }
+
+  .highlight {
+    font-weight: 900;
+  }
 }
 
 .white-table {
   th,
   td {
-    background: #ffffff !important;
+    // background: #ffffff !important;
+  }
+}
+
+.login-popup {
+  padding-top: 120px;
+  text-align: center;
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+
+  img {
+    margin-bottom: 20px;
+  }
+
+  input {
+    width: 500px;
+    padding: 12px;
+    border-radius: 32px;
+    border: 1px solid #bbbbbb;
   }
 }
