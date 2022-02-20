@@ -1,89 +1,94 @@
-table {
-  width: 100%;
-  border-spacing: 0px;
-  td,
-  th {
-    padding: 8px;
-    border: 1px solid #ccc;
-    text-align: left;
+.app-component {
+  padding: 12px;
+  h4 {
+    margin-bottom: 8px;
   }
-
-  th {
-    // background: #eeeeee;
-    // border: 1px solid #000;
-  }
-
-  .background1 {
-    // background: #d1c4e9;
-  }
-
-  .background2 {
-    // background: #b3e5fc;
-  }
-
-  .background3 {
-    // background: #c8e6c9;
-    text-align: right;
-  }
-
-  .background4 {
-    // background: #ffecb3;
-    text-align: right;
-  }
-
-  .background5 {
-    // background: #ffccbc;
-  }
-
-  .dark-border {
-    border: 1px solid #000;
-  }
-
-  input[type="text"],
-  input[type="number"] {
-    width: 80px;
-    padding: 4px;
-  }
-
-  input[type="radio"] {
-    margin: 0px;
-    margin-right: 4px;
-  }
-
-  small {
-    font-size: 10px;
-    font-style: italic;
-  }
-
-  .highlight {
-    font-weight: 900;
-  }
-}
-
-.white-table {
-  th,
-  td {
-    // background: #ffffff !important;
-  }
-}
-
-.login-popup {
-  padding-top: 120px;
-  text-align: center;
-  position: fixed;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-
-  img {
-    margin-bottom: 20px;
-  }
-
-  input {
-    width: 500px;
+  .table-container {
+    background: #ffffff;
+    border-radius: 4px;
     padding: 12px;
-    border-radius: 32px;
-    border: 1px solid #bbbbbb;
+    box-shadow: 0px 0px 4px 0px rgba($color: #000000, $alpha: 0.33);
+    overflow: scroll;
+
+    table {
+      border-spacing: 0px;
+      border-radius: 4px;
+      width: 100%;
+
+      th {
+        padding: 8px;
+        border: 1px solid #dddddd;
+        background: #eeeeee;
+        text-align: left;
+        vertical-align: top;
+        text-transform: uppercase;
+        font-size: 12px;
+      }
+      td {
+        padding: 8px;
+        border: 1px solid #dddddd;
+        text-align: left;
+        vertical-align: middle;
+
+        input {
+          margin: 4px 0px;
+          border-radius: 4px;
+          padding: 4px;
+          width: 80px;
+          border-color: transparent;
+          background: #eeeeee;
+        }
+
+        .full-width {
+          display: block;
+        }
+
+        .half-width {
+          display: inline-block;
+          input:first-of-type {
+            margin-right: 16px;
+          }
+        }
+
+        button {
+          font-size: 24px;
+          display: block;
+          margin: 0px 4px 4px 0px;
+          height: 36px;
+        }
+
+        span {
+          display: inline-block;
+          width: 140px;
+        }
+
+        .invalid-message {
+          span {
+            color: red;
+          }
+        }
+      }
+    }
+  }
+  .login-popup {
+    padding-top: 120px;
+    text-align: center;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background: #ffffff;
+
+    img {
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 500px;
+      padding: 12px;
+      border-radius: 32px;
+      border: 1px solid #bbbbbb;
+    }
   }
 }

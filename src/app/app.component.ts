@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-root',
@@ -10,376 +9,177 @@ import { saveAs } from 'file-saver';
 export class AppComponent implements OnInit {
   loggedIn = false;
   password = '';
-  clientRequirement = 'sqmt';
-  dataRows: any[] = [
+  inputRows: any[] = [
     {
-      notes: null,
-      boxPerPallet1: null,
-      boxPerPallet2: null,
-      sqmtPerBox: null,
-      weightPerBox: null,
-      piecesPerBox: null,
-      boxPerContainer: null,
-      sqmt: null,
-      pieces: null,
-      boxes: null,
-      pallets1: null,
-      pallets2: null,
+      givenBoxPerPallet1: null,
+      givenPalletPerContainer1: null,
+      givenBoxPerPallet2: null,
+      givenPalletPerContainer2: null,
+      givenBoxPerContainer: null,
+      givenSqmtPerBox: null,
+      givenPiecesPerBox: null,
+      reqPallet1: null,
+      reqPallet2: null,
+      reqBoxes: null,
+      reqSqmt: null,
+      reqPieces: null,
+      reqContainers: null,
       calcBoxes: null,
-      calcSqmt: null,
-      calcPercentage: null,
-      calcWeight: null,
       calcContainers: null,
+      pallet1: null,
+      pallet2: null,
+      boxes: null,
+      containers: null,
     },
   ];
-  dataTotal = {
-    totalSqmt: 0,
-    totalPieces: 0,
-    totalBoxes: 0,
-    totalPallets1: 0,
-    totalPallets2: 0,
-    totalCalcBoxes: 0,
-    totalCalcSqmt: 0,
-    totalCalcPercentage: 0,
-    totalCalcWeight: 0,
-    totalCalcContainers: 0,
-  };
-  monthArr = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'June',
-    'July',
-    'Aug',
-    'Sept',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
+
+  columnTotals = {
+    containers: 0,
+    boxes: 0,
+  }
+
+  containersBreakup: any[] = [];
 
   ngOnInit(): void {
-    const savedRows = localStorage.getItem('rows');
-    const savedTotal = localStorage.getItem('total');
-    const savedRequirement = localStorage.getItem('requirement');
-    if (savedRows) {
-      this.dataRows = JSON.parse(savedRows);
+    const inputRows = localStorage.getItem('inputRows');
+    if (inputRows) {
+      this.inputRows = JSON.parse(inputRows);
+      this.calculateRequirementsOfAllRows(false);
     }
-    if (savedTotal) {
-      this.dataTotal = JSON.parse(savedTotal);
-    }
-    this.clientRequirement = savedRequirement || 'sqmt';
   }
 
-  onAddClick() {
-    this.dataRows.push({
-      notes: null,
-      boxPerPallet1: null,
-      boxPerPallet2: null,
-      sqmtPerBox: null,
-      weightPerBox: null,
-      piecesPerBox: null,
-      boxPerContainer: null,
-      boxes: null,
-      pallets1: null,
-      pallets2: null,
-      sqmt: null,
-      pieces: null,
-      calcBoxes: null,
-      calcSqmt: null,
-      calcPercentage: null,
-      calcWeight: null,
-      calcContainers: null,
-    });
-    this.calculateAndAssignTotals();
-  }
-
-  onDeleteClick(index) {
-    if (this.dataRows.length <= 1) {
-      this.dataRows[0] = {
-        notes: null,
-        boxPerPallet1: null,
-        boxPerPallet2: null,
-        sqmtPerBox: null,
-        weightPerBox: null,
-        piecesPerBox: null,
-        boxPerContainer: null,
-        sqmt: null,
-        pieces: null,
-        boxes: null,
-        pallets1: null,
-        pallets2: null,
-        calcBoxes: null,
-        calcSqmt: null,
-        calcPercentage: null,
-        calcWeight: null,
-        calcContainers: null,
-      };
-    } else {
-      this.dataRows.splice(index, 1);
-    }
-    this.calculateAndAssignTotals();
-  }
-
-  onCopyClick(index) {
-    const dataToCopy = JSON.parse(JSON.stringify(this.dataRows[index]));
-    this.dataRows.splice(index, 0, dataToCopy);
-    this.calculateAndAssignTotals();
-  }
-
-  dataChanged(index, type, value) {
+  dataChanged(index, type): void {
     switch (type) {
-      case 'boxPerPallet1':
-      case 'boxPerPallet2':
-      case 'sqmtPerBox':
-      case 'weightPerBox':
-      case 'piecesPerBox':
-      case 'boxPerContainer':
-        switch (this.clientRequirement) {
-          case 'sqmt':
-            this.dataRows[index].boxes = Number(
-              (
-                this.dataRows[index].sqmt / this.dataRows[index].sqmtPerBox
-              ).toFixed(0)
-            );
-            this.dataRows[index].pieces = Number(
-              (
-                this.dataRows[index].boxes * this.dataRows[index].piecesPerBox
-              ).toFixed(0)
-            );
-            this.calculateAndAssignPallets(index);
-            break;
-          case 'pieces':
-            this.dataRows[index].boxes = parseInt(
-              (
-                this.dataRows[index].pieces / this.dataRows[index].piecesPerBox
-              ).toFixed(0)
-            );
-            this.dataRows[index].sqmt = parseFloat(
-              (
-                this.dataRows[index].boxes * this.dataRows[index].sqmtPerBox
-              ).toFixed(2)
-            );
-            this.calculateAndAssignPallets(index);
-            break;
-          case 'boxes':
-            this.dataRows[index].pieces = parseInt(
-              (
-                this.dataRows[index].boxes * this.dataRows[index].piecesPerBox
-              ).toFixed(0)
-            );
-            this.dataRows[index].sqmt = parseFloat(
-              (
-                this.dataRows[index].boxes * this.dataRows[index].sqmtPerBox
-              ).toFixed(2)
-            );
-            this.calculateAndAssignPallets(index);
-            break;
-        }
+      case 'reqPallet1':
+        this.inputRows[index].reqBoxes = null;
+        this.inputRows[index].reqSqmt = null;
+        this.inputRows[index].reqPieces = null;
+        this.inputRows[index].reqContainers = null;
         break;
-      case 'sqmt':
-        this.dataRows[index].boxes = Number(
-          (this.dataRows[index].sqmt / this.dataRows[index].sqmtPerBox).toFixed(
-            0
-          )
-        );
-        this.dataRows[index].pieces = Number(
-          (
-            this.dataRows[index].boxes * this.dataRows[index].piecesPerBox
-          ).toFixed(0)
-        );
-        // if (!this.dataRows[index].boxPerPallet2) {
-        //   this.dataRows[index].pallets1 = Math.ceil((this.dataRows[index].boxes / this.dataRows[index].boxPerPallet1));
-        //   this.dataRows[index].pallets2 = 0;
-        // } else {
-        //   const halfBoxes = this.dataRows[index].boxes / 2;
-        //   this.dataRows[index].pallets1 = Math.ceil((halfBoxes / this.dataRows[index].boxPerPallet1));
-        //   this.dataRows[index].pallets2 = Math.ceil((halfBoxes / this.dataRows[index].boxPerPallet2));
-        // }
-        this.calculateAndAssignPallets(index);
+      case 'reqPallet2':
+        this.inputRows[index].reqBoxes = null;
+        this.inputRows[index].reqSqmt = null;
+        this.inputRows[index].reqPieces = null;
+        this.inputRows[index].reqContainers = null;
         break;
-      case 'pieces':
-        this.dataRows[index].boxes = parseInt(
-          (
-            this.dataRows[index].pieces / this.dataRows[index].piecesPerBox
-          ).toFixed(0)
-        );
-        this.dataRows[index].sqmt = parseFloat(
-          (
-            this.dataRows[index].boxes * this.dataRows[index].sqmtPerBox
-          ).toFixed(2)
-        );
-        // if (!this.dataRows[index].boxPerPallet2) {
-        //   this.dataRows[index].pallets1 = Math.ceil((this.dataRows[index].boxes / this.dataRows[index].boxPerPallet1));
-        //   this.dataRows[index].pallets2 = 0;
-        // } else {
-        //   const halfBoxes = this.dataRows[index].boxes / 2;
-        //   this.dataRows[index].pallets1 = Math.ceil((halfBoxes / this.dataRows[index].boxPerPallet1));
-        //   this.dataRows[index].pallets2 = Math.ceil((halfBoxes / this.dataRows[index].boxPerPallet2));
-        // }
-        this.calculateAndAssignPallets(index);
+      case 'reqBoxes':
+        this.inputRows[index].reqPallet1 = null;
+        this.inputRows[index].reqPallet2 = null;
+        this.inputRows[index].reqSqmt = null;
+        this.inputRows[index].reqPieces = null;
+        this.inputRows[index].reqContainers = null;
         break;
-      case 'boxes':
-        this.dataRows[index].pieces = parseInt(
-          (
-            this.dataRows[index].boxes * this.dataRows[index].piecesPerBox
-          ).toFixed(0)
-        );
-        this.dataRows[index].sqmt = parseFloat(
-          (
-            this.dataRows[index].boxes * this.dataRows[index].sqmtPerBox
-          ).toFixed(2)
-        );
-        // if (!this.dataRows[index].boxPerPallet2) {
-        //   this.dataRows[index].pallets1 = Math.ceil((this.dataRows[index].boxes / this.dataRows[index].boxPerPallet1));
-        //   this.dataRows[index].pallets2 = 0;
-        // } else {
-        //   const halfBoxes = this.dataRows[index].boxes / 2;
-        //   this.dataRows[index].pallets1 = Math.ceil((halfBoxes / this.dataRows[index].boxPerPallet1));
-        //   this.dataRows[index].pallets2 = Math.ceil((halfBoxes / this.dataRows[index].boxPerPallet2));
-        // }
-        this.calculateAndAssignPallets(index);
+      case 'reqSqmt':
+        this.inputRows[index].reqPallet1 = null;
+        this.inputRows[index].reqPallet2 = null;
+        this.inputRows[index].reqBoxes = null;
+        this.inputRows[index].reqPieces = null;
+        this.inputRows[index].reqContainers = null;
         break;
-      case 'pallets1':
-        this.dataRows[index].boxes =
-          parseInt(
-            (
-              this.dataRows[index].boxPerPallet1 * this.dataRows[index].pallets1
-            ).toFixed(0)
-          ) +
-          parseInt(
-            (
-              this.dataRows[index].boxPerPallet2 * this.dataRows[index].pallets2
-            ).toFixed(0)
-          );
-        this.dataRows[index].pieces = parseInt(
-          (
-            this.dataRows[index].boxes * this.dataRows[index].piecesPerBox
-          ).toFixed(0)
-        );
-        this.dataRows[index].sqmt = parseFloat(
-          (
-            this.dataRows[index].boxes * this.dataRows[index].sqmtPerBox
-          ).toFixed(2)
-        );
-        if (!this.dataRows[index].boxPerPallet2) {
-          this.dataRows[index].pallets2 = 0;
-        } else {
-          const halfBoxes =
-            this.dataRows[index].boxes -
-            parseInt(
-              (
-                this.dataRows[index].boxPerPallet1 *
-                this.dataRows[index].pallets1
-              ).toFixed(0)
-            );
-          this.dataRows[index].pallets2 = Math.ceil(
-            halfBoxes / this.dataRows[index].boxPerPallet2
-          );
-        }
+      case 'reqPieces':
+        this.inputRows[index].reqPallet1 = null;
+        this.inputRows[index].reqPallet2 = null;
+        this.inputRows[index].reqSqmt = null;
+        this.inputRows[index].reqBoxes = null;
+        this.inputRows[index].reqContainers = null;
         break;
-      case 'pallets2':
-        this.dataRows[index].boxes =
-          parseInt(
-            (
-              this.dataRows[index].boxPerPallet1 * this.dataRows[index].pallets1
-            ).toFixed(0)
-          ) +
-          parseInt(
-            (
-              this.dataRows[index].boxPerPallet2 * this.dataRows[index].pallets2
-            ).toFixed(0)
-          );
-        this.dataRows[index].pieces = parseInt(
-          (
-            this.dataRows[index].boxes * this.dataRows[index].piecesPerBox
-          ).toFixed(0)
-        );
-        this.dataRows[index].sqmt = parseFloat(
-          (
-            this.dataRows[index].boxes * this.dataRows[index].sqmtPerBox
-          ).toFixed(2)
-        );
-        const halfBoxes =
-          this.dataRows[index].boxes -
-          parseInt(
-            (
-              this.dataRows[index].boxPerPallet2 * this.dataRows[index].pallets2
-            ).toFixed(0)
-          );
-        this.dataRows[index].pallets1 = Math.ceil(
-          halfBoxes / this.dataRows[index].boxPerPallet1
-        );
+      case 'reqContainers':
+        this.inputRows[index].reqPallet1 = null;
+        this.inputRows[index].reqPallet2 = null;
+        this.inputRows[index].reqSqmt = null;
+        this.inputRows[index].reqBoxes = null;
+        this.inputRows[index].reqPieces = null;
         break;
     }
+    this.calculateRequirementsOfOneRow(index, type !== 'pallet1' && type !== 'pallet2');
+    this.saveToLocalStorage();
+  }
 
-    this.dataRows[index].calcBoxes =
-      parseInt(
-        (
-          this.dataRows[index].boxPerPallet1 * this.dataRows[index].pallets1
-        ).toFixed(0)
-      ) +
-      parseInt(
-        (
-          this.dataRows[index].boxPerPallet2 * this.dataRows[index].pallets2
-        ).toFixed(0)
-      );
-    this.dataRows[index].calcSqmt = parseFloat(
-      (
-        this.dataRows[index].calcBoxes * this.dataRows[index].sqmtPerBox
-      ).toFixed(2)
-    );
-    this.dataRows[index].calcPercentage = parseInt(
-      (
-        (this.dataRows[index].calcBoxes * 100) /
-        this.dataRows[index].boxPerContainer
-      ).toFixed(0)
-    );
-    this.dataRows[index].calcWeight = parseInt(
-      (
-        this.dataRows[index].calcBoxes * this.dataRows[index].weightPerBox
-      ).toFixed(0)
-    );
-    this.dataRows[index].calcContainers = parseFloat(
-      (
-        this.dataRows[index].calcBoxes / this.dataRows[index].boxPerContainer
-      ).toFixed(2)
-    );
+  calculateRequirementsOfOneRow(index, calculatePallets: boolean): void {
+    this.calculateBoxesAndContainers(index, calculatePallets);
+    this.calculateColumnTotals();
+    this.calculateContainerBreakup();
+  }
 
-    this.calculateAndAssignTotals();
+  calculateRequirementsOfAllRows(calculatePallets: boolean): void {
+    this.inputRows.forEach((element, index) => {
+      this.calculateBoxesAndContainers(index, calculatePallets);
+    });
+
+    this.calculateColumnTotals();
+    this.calculateContainerBreakup();
+  }
+
+  calculateBoxesAndContainers(index, calculatePallets: boolean) {
+    let calcBoxes = 0;
+    let calcContainers = 0;
+
+    if (this.inputRows[index].reqPallet1 && !this.inputRows[index].reqPallet2) {
+      calcContainers = this.inputRows[index].reqPallet1 / this.inputRows[index].givenPalletPerContainer1;
+      calcBoxes = this.inputRows[index].reqPallet1 * this.inputRows[index].givenBoxPerPallet1;
+    } else if (this.inputRows[index].reqPallet1 && this.inputRows[index].reqPallet2) {
+      calcBoxes = (this.inputRows[index].reqPallet1 * this.inputRows[index].givenBoxPerPallet1) + (this.inputRows[index].reqPallet2 * this.inputRows[index].givenBoxPerPallet2);
+      calcContainers = calcBoxes / this.inputRows[index].givenBoxPerContainer;
+    } else if (this.inputRows[index].reqBoxes) {
+      calcBoxes = this.inputRows[index].reqBoxes;
+      calcContainers = calcBoxes / this.inputRows[index].givenBoxPerContainer;
+    } else if (this.inputRows[index].reqSqmt) {
+      calcBoxes = this.inputRows[index].reqSqmt / this.inputRows[index].givenSqmtPerBox;
+      calcContainers = calcBoxes / this.inputRows[index].givenBoxPerContainer;
+    } else if (this.inputRows[index].reqPieces) {
+      calcBoxes = this.inputRows[index].reqPieces / this.inputRows[index].givenPiecesPerBox;
+      calcContainers = calcBoxes / this.inputRows[index].givenBoxPerContainer;
+    } else if (this.inputRows[index].reqContainers) {
+      calcContainers = this.inputRows[index].reqContainers;
+      calcBoxes = calcContainers * this.inputRows[index].givenBoxPerContainer;
+    }
+
+    this.inputRows[index].calcContainers = parseFloat(calcContainers.toFixed(8));
+    this.inputRows[index].calcBoxes = parseFloat(calcBoxes.toFixed(4));
+
+    if (calculatePallets) {
+      this.calculateAndAssignPallets(index);
+    }
+
+    const finalBoxes = (this.inputRows[index].pallet1 * this.inputRows[index].givenBoxPerPallet1) + (this.inputRows[index].pallet2 * this.inputRows[index].givenBoxPerPallet2);
+    const finalContainers = finalBoxes ? finalBoxes / this.inputRows[index].givenBoxPerContainer : 0;
+    this.inputRows[index].containers = parseFloat(finalContainers.toFixed(8));
+    this.inputRows[index].boxes = parseFloat(finalBoxes.toFixed(4));
   }
 
   calculateAndAssignPallets(index) {
     let pallet1 = 0;
     let pallet2 = 0;
     if (
-      this.dataRows[index].boxPerPallet1 &&
-      !this.dataRows[index].boxPerPallet2
+      this.inputRows[index].givenBoxPerPallet1 &&
+      !this.inputRows[index].givenBoxPerPallet2
     ) {
       let difference = 1000000000;
-      for (let i = 0; i <= 100; i++) {
-        const value = this.dataRows[index].boxPerPallet1 * i;
-        if (Math.abs(this.dataRows[index].boxes - value) < difference) {
-          difference = Math.abs(this.dataRows[index].boxes - value);
+      const maxCount = Math.ceil(this.inputRows[index].givenPalletPerContainer1 * this.inputRows[index].calcContainers) || 100;
+      for (let i = 0; i <= maxCount; i++) {
+        const value = this.inputRows[index].givenBoxPerPallet1 * i;
+        if (Math.abs(this.inputRows[index].calcBoxes - value) < difference) {
+          difference = Math.abs(this.inputRows[index].calcBoxes - value);
           pallet1 = i;
         }
       }
     } else if (
-      this.dataRows[index].boxPerPallet1 &&
-      this.dataRows[index].boxPerPallet2
+      this.inputRows[index].givenBoxPerPallet1 &&
+      this.inputRows[index].givenBoxPerPallet2
     ) {
       let difference = 1000000000;
-      for (let i = 0; i <= 100; i++) {
-        for (let j = 0; j <= 100; j++) {
-          const value1 = this.dataRows[index].boxPerPallet1 * i;
-          const value2 = this.dataRows[index].boxPerPallet2 * j;
+      const maxCount1 = Math.ceil(this.inputRows[index].givenPalletPerContainer1 * this.inputRows[index].calcContainers) || 100;
+      const maxCount2 = Math.ceil(this.inputRows[index].givenPalletPerContainer2 * this.inputRows[index].calcContainers) || 100;
+      for (let i = 0; i <= maxCount1; i++) {
+        for (let j = 0; j <= maxCount2; j++) {
+          const value1 = this.inputRows[index].givenBoxPerPallet1 * i;
+          const value2 = this.inputRows[index].givenBoxPerPallet2 * j;
           if (
-            Math.abs(this.dataRows[index].boxes - (value1 + value2)) <
+            Math.abs(this.inputRows[index].calcBoxes - (value1 + value2)) <
             difference
           ) {
             difference = Math.abs(
-              this.dataRows[index].boxes - (value1 + value2)
+              this.inputRows[index].calcBoxes - (value1 + value2)
             );
             pallet1 = i;
             pallet2 = j;
@@ -387,138 +187,178 @@ export class AppComponent implements OnInit {
         }
       }
     }
-    this.dataRows[index].pallets1 = pallet1;
-    this.dataRows[index].pallets2 = pallet2;
+    this.inputRows[index].pallet1 = pallet1;
+    this.inputRows[index].pallet2 = pallet2;
   }
 
-  calculateAndAssignTotals() {
-    this.dataTotal.totalSqmt = parseFloat(
-      this.dataRows
-        .reduce((total, value) => {
-          return total + value.sqmt || 0;
-        }, 0)
-        .toFixed(2)
-    );
-    this.dataTotal.totalPieces = parseInt(
-      this.dataRows
-        .reduce((total, value) => {
-          return total + value.pieces || 0;
-        }, 0)
-        .toFixed(0)
-    );
-    this.dataTotal.totalBoxes = parseInt(
-      this.dataRows
-        .reduce((total, value) => {
-          return total + value.boxes || 0;
-        }, 0)
-        .toFixed(0)
-    );
-    this.dataTotal.totalPallets1 = parseInt(
-      this.dataRows
-        .reduce((total, value) => {
-          return total + value.pallets1 || 0;
-        }, 0)
-        .toFixed(0)
-    );
-    this.dataTotal.totalPallets2 = parseInt(
-      this.dataRows
-        .reduce((total, value) => {
-          return total + value.pallets2 || 0;
-        }, 0)
-        .toFixed(0)
-    );
-    this.dataTotal.totalCalcBoxes = parseInt(
-      this.dataRows
-        .reduce((total, value) => {
-          return total + value.calcBoxes || 0;
-        }, 0)
-        .toFixed(0)
-    );
-    this.dataTotal.totalCalcSqmt = parseFloat(
-      this.dataRows
-        .reduce((total, value) => {
-          return total + value.calcSqmt || 0;
-        }, 0)
-        .toFixed(2)
-    );
-    this.dataTotal.totalCalcPercentage = parseInt(
-      this.dataRows
-        .reduce((total, value) => {
-          return total + value.calcPercentage || 0;
-        }, 0)
-        .toFixed(0)
-    );
-    this.dataTotal.totalCalcWeight = parseInt(
-      this.dataRows
-        .reduce((total, value) => {
-          return total + value.calcWeight || 0;
-        }, 0)
-        .toFixed(0)
-    );
-    this.dataTotal.totalCalcContainers = parseFloat(
-      this.dataRows
-        .reduce((total, value) => {
-          return total + value.calcContainers || 0;
-        }, 0)
-        .toFixed(2)
-    );
-
-    this.saveToLocalStorage();
+  saveToLocalStorage(): void {
+    localStorage.setItem('inputRows', JSON.stringify(this.inputRows));
   }
 
-  saveToLocalStorage() {
-    localStorage.setItem('rows', JSON.stringify(this.dataRows));
-    localStorage.setItem('total', JSON.stringify(this.dataTotal));
+  calculateColumnTotals(): void {
+    this.columnTotals.containers = parseFloat((this.inputRows.reduce((total, value) => { return total + value.containers || 0; }, 0)).toFixed(4));
+    this.columnTotals.boxes = parseFloat((this.inputRows.reduce((total, value) => { return total + value.boxes || 0; }, 0)).toFixed(2));
   }
 
-  onDownloadClick() {
-    this.downloadFile(this.dataRows);
+  onAddClick() {
+    this.inputRows.push({
+      givenBoxPerPallet1: null,
+      givenPalletPerContainer1: null,
+      givenBoxPerPallet2: null,
+      givenPalletPerContainer2: null,
+      givenBoxPerContainer: null,
+      givenSqmtPerBox: null,
+      givenPiecesPerBox: null,
+      reqPallet1: null,
+      reqPallet2: null,
+      reqBoxes: null,
+      reqSqmt: null,
+      reqPieces: null,
+      reqContainers: null,
+      calcBoxes: null,
+      calcContainers: null,
+      pallet1: null,
+      pallet2: null,
+      boxes: null,
+      containers: null,
+    });
+    this.calculateRequirementsOfAllRows(true);
   }
 
-  downloadFile(data: any) {
-    const replacer = (key, value) => (value === null ? '' : value);
-    const header = Object.keys(data[0]);
-    let csv = data.map((row) =>
-      header
-        .map((fieldName) => JSON.stringify(row[fieldName], replacer))
-        .join(',')
-    );
-    csv.unshift(
-      [
-        'Box/Pallet (Type 1)',
-        'Box/Pallet (Type 2)',
-        'Sqmt/Box',
-        'Weight/Box (Kg)',
-        'Pieces/Box',
-        'Box/Container',
-        'Required Sqmt',
-        'Required Pieces',
-        'Required Boxes',
-        'Pallets (Type 1)',
-        'Pallets (Type 2)',
-        'Calculated Boxes',
-        'Calculated Sqmt',
-        'Percentage (%)',
-        'Weight (Kg)',
-        'Containers',
-      ].join(',')
-    );
-    let csvArray = csv.join('\r\n');
-    const blob = new Blob([csvArray], { type: 'text/csv' });
-    const date = new Date();
-    saveAs(
-      blob,
-      'PI_Sheet_' +
-        date.getDate() +
-        '_' +
-        this.monthArr[date.getMonth()] +
-        '.csv'
-    );
+  onDeleteClick(index): void {
+    if (this.inputRows.length <= 1) {
+      this.inputRows[0] = {
+        givenBoxPerPallet1: null,
+        givenPalletPerContainer1: null,
+        givenBoxPerPallet2: null,
+        givenPalletPerContainer2: null,
+        givenBoxPerContainer: null,
+        givenSqmtPerBox: null,
+        givenPiecesPerBox: null,
+        reqPallet1: null,
+        reqPallet2: null,
+        reqBoxes: null,
+        reqSqmt: null,
+        reqPieces: null,
+        reqContainers: null,
+        calcBoxes: null,
+        calcContainers: null,
+        pallet1: null,
+        pallet2: null,
+        boxes: null,
+        containers: null,
+      }
+    } else {
+      this.inputRows.splice(index, 1);
+    }
+    this.calculateRequirementsOfAllRows(true);
   }
 
-  changeType(value) {
-    this.clientRequirement = value;
-    localStorage.setItem('requirement', this.clientRequirement);
+  onCopyClick(index): void {
+    const dataToCopy = JSON.parse(JSON.stringify(this.inputRows[index]));
+    this.inputRows.splice(index, 0, dataToCopy);
+    this.calculateRequirementsOfAllRows(true);
+  }
+
+  calculateContainerBreakup(): void {
+    // prepare empty list
+    this.containersBreakup = [];
+    for (let index = 0; index < Math.ceil(this.columnTotals.containers); index++) {
+      this.containersBreakup.push({ total: 0, breakup: [] });
+    }
+
+    // get original container values
+    const inputList = JSON.parse(JSON.stringify(this.inputRows.map(x => x.containers)));
+
+    this.containersBreakup.forEach((eachContainer) => {
+      for (let index = 0; index < inputList.length; index++) {
+        const tileSpace = inputList[index];
+        const availableSpace = 1;
+        const incomingSpace = Math.min(availableSpace, tileSpace);
+        if (availableSpace > 0 && incomingSpace > 0) {
+          eachContainer.total += incomingSpace;
+          const boxes = parseFloat((this.inputRows[index].givenBoxPerContainer * incomingSpace).toFixed(0));
+          eachContainer.breakup.push({
+            tileName: 'Tile No. ' + (index + 1),
+            rowIndex: index,
+            containers: incomingSpace,
+            boxes: boxes,
+          });
+          inputList[index] -= incomingSpace;
+          break;
+        }
+      }
+    });
+
+    this.containersBreakup.forEach((eachContainer) => {
+      for (let index = 0; index < inputList.length; index++) {
+        const tileSpace = inputList[index];
+        const availableSpace = 1 - eachContainer.total;
+        const incomingSpace = Math.min(availableSpace, tileSpace);
+        if (availableSpace > 0 && incomingSpace > 0) {
+          eachContainer.total += incomingSpace;
+          const boxes = parseFloat((this.inputRows[index].givenBoxPerContainer * incomingSpace).toFixed(0));
+          eachContainer.breakup.push({
+            tileName: 'Tile No. ' + (index + 1),
+            rowIndex: index,
+            containers: incomingSpace,
+            boxes: boxes,
+          });
+          inputList[index] -= incomingSpace;
+        }
+      }
+    });
+  }
+
+  containerTableDataChanged(group): void {
+    group.containers = parseFloat((group.boxes / this.inputRows[group.rowIndex].givenBoxPerContainer).toFixed(8));
+  }
+
+  getBreakupTotal(containerRow): string {
+    const total = parseFloat((containerRow.breakup.reduce((total, value) => { return total + value.containers || 0; }, 0)).toFixed(4));
+    return total > 1 ? `<span>${total}</span>` : `<b>${total}</b>`
+  }
+
+  getPalletsCombination(index, boxes): string {
+    let pallet1 = 0;
+    let pallet2 = 0;
+    let calcBoxes = 0;
+    const givenBoxPerPallet1 = this.inputRows[index].givenBoxPerPallet1;
+    const givenBoxPerPallet2 = this.inputRows[index].givenBoxPerPallet2;
+    if (givenBoxPerPallet1 && !givenBoxPerPallet2) {
+      let difference = 1000000000;
+      for (let i = 0; i <= 100; i++) {
+        const value = givenBoxPerPallet1 * i;
+        if (Math.abs(boxes - value) < difference) {
+          difference = Math.abs(boxes - value);
+          pallet1 = i;
+        }
+      }
+      calcBoxes = givenBoxPerPallet1 * pallet1;
+      if (calcBoxes !== boxes) {
+        return '';
+      }
+      return `${givenBoxPerPallet1} x ${pallet1}`;
+    } else if (givenBoxPerPallet1 && givenBoxPerPallet2) {
+      let difference = 1000000000;
+      for (let i = 0; i <= 100; i++) {
+        for (let j = 0; j <= 100; j++) {
+          const value1 = givenBoxPerPallet1 * i;
+          const value2 = givenBoxPerPallet2 * j;
+          if (Math.abs(boxes - (value1 + value2)) < difference) {
+            difference = Math.abs(boxes - (value1 + value2));
+            pallet1 = i;
+            pallet2 = j;
+          }
+        }
+      }
+      calcBoxes = (givenBoxPerPallet1 * pallet1) + (givenBoxPerPallet2 * pallet2);
+      if (calcBoxes !== boxes) {
+        return '';
+      }
+      return `${givenBoxPerPallet1} x ${pallet1} + ${givenBoxPerPallet2} x ${pallet2}`;
+    }
+    return '';
   }
 
   onLoginClick() {

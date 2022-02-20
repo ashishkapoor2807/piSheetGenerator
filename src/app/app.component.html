@@ -1,297 +1,289 @@
-<div *ngIf="loggedIn">
-  <table class="white-table">
-    <tr>
-      <th></th>
-      <th class="dark-border"></th>
-      <th colspan="6" class="background1" style="text-align: center">
-        DEFAULT INFORMATION
-      </th>
-      <th
-        colspan="3"
-        class="background2 dark-border"
-        style="text-align: center"
-      >
-        CLIENT REQUIREMENTS
-      </th>
-      <th colspan="2" class="background5" style="text-align: center">
-        ADJUSTMENTS
-      </th>
-      <th
-        colspan="5"
-        class="background3 dark-border"
-        style="text-align: center"
-      >
-        CALCULATIONS
-      </th>
-    </tr>
-    <tr>
-      <th></th>
-      <th class="dark-border">Notes</th>
-      <th class="background1">Box/Pallet (Type 1)</th>
-      <th class="background1">Box/Pallet (Type 2)</th>
-      <th class="background1">Sqmt/Box</th>
-      <th class="background1">Weight/Box (Kg)</th>
-      <th class="background1">Pieces/Box</th>
-      <th class="background1">Box/Container</th>
-      <th class="background2 dark-border">
-        <input
-          type="radio"
-          id="type1"
-          name="requirement"
-          value="sqmt"
-          [(ngModel)]="clientRequirement"
-          (ngModelChange)="changeType($event)"
-        /><label for="type1">Required Sqmt</label>
-      </th>
-      <th class="background2 dark-border">
-        <input
-          type="radio"
-          id="type2"
-          name="requirement"
-          value="pieces"
-          [(ngModel)]="clientRequirement"
-          (ngModelChange)="changeType($event)"
-        /><label for="type2">Required Pieces</label>
-      </th>
-      <th class="background2 dark-border">
-        <input
-          type="radio"
-          id="type3"
-          name="requirement"
-          value="boxes"
-          [(ngModel)]="clientRequirement"
-          (ngModelChange)="changeType($event)"
-        /><label for="type3">Required Boxes</label>
-      </th>
-      <th class="background5">Pallets (Type 1)</th>
-      <th class="background5">Pallets (Type 2)</th>
-      <th class="background3 dark-border">Calculated Boxes</th>
-      <th class="background3 dark-border">Calculated Sqmt</th>
-      <th class="background3 dark-border">Percentage (%)</th>
-      <th class="background3 dark-border">Weight (Kg)</th>
-      <th class="background3 dark-border">Containers</th>
-    </tr>
-    <tr *ngFor="let row of dataRows; let i = index">
-      <td>
-        <div style="width: 64px">
-          <button
-            style="
-              font-size: 20px;
-              color: red;
-              display: inline-block;
-              margin-right: 4px;
-            "
-            (click)="onDeleteClick(i)"
-          >
-            &times;
-          </button>
-          <button
-            style="font-size: 20px; color: blue; display: inline-block"
-            (click)="onCopyClick(i)"
-          >
-            &#x2398;
-          </button>
-        </div>
-      </td>
-      <td class="dark-border">
-        <input
-          type="text"
-          [(ngModel)]="row.notes"
-          (ngModelChange)="dataChanged(i, 'notes', $event)"
-        />
-      </td>
+<div class="app-component">
+  <div *ngIf="loggedIn">
+    <div class="table-container">
+      <table>
+        <tr>
+          <th></th>
+          <th colspan="2" style="text-align: center">Tile Details</th>
+          <th colspan="3" style="text-align: center">Requirements</th>
+          <th colspan="2" style="text-align: center">Calculation</th>
+        </tr>
+        <tr>
+          <th style="width: 30px"></th>
+          <th style="width: 80px">Name</th>
+          <th>Specifications</th>
+          <th>Items</th>
+          <th style="width: 70px">Boxes</th>
+          <th style="width: 80px">Containers</th>
+          <th style="width: 140px">Boxes</th>
+          <th style="width: 80px">Containers</th>
+        </tr>
+        <tr *ngFor="let row of inputRows; let i = index">
+          <td>
+            <button style="color: red" (click)="onDeleteClick(i)">
+              &times;
+            </button>
+            <button style="color: blue" (click)="onCopyClick(i)">
+              &#x2398;
+            </button>
+          </td>
+          <td>Tile No. {{ i + 1 }}</td>
+          <td>
+            <div class="half-width">
+              <span>Boxes/Pallet (1)</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.givenBoxPerPallet1"
+                (ngModelChange)="dataChanged(i, 'givenBoxPerPallet1')"
+              />
+            </div>
 
-      <td class="background1">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.boxPerPallet1"
-          (ngModelChange)="dataChanged(i, 'boxPerPallet1', $event)"
-        />
-      </td>
-      <td class="background1">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.boxPerPallet2"
-          (ngModelChange)="dataChanged(i, 'boxPerPallet2', $event)"
-        />
-      </td>
-      <td class="background1">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.sqmtPerBox"
-          (ngModelChange)="dataChanged(i, 'sqmtPerBox', $event)"
-        />
-      </td>
-      <td class="background1">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.weightPerBox"
-          (ngModelChange)="dataChanged(i, 'weightPerBox', $event)"
-        />
-      </td>
-      <td class="background1">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.piecesPerBox"
-          (ngModelChange)="dataChanged(i, 'piecesPerBox', $event)"
-        />
-      </td>
-      <td class="background1">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.boxPerContainer"
-          (ngModelChange)="dataChanged(i, 'boxPerContainer', $event)"
-        />
-      </td>
-      <td class="background2 dark-border">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.sqmt"
-          (ngModelChange)="dataChanged(i, 'sqmt', $event)"
-        />
-      </td>
-      <td class="background2 dark-border">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.pieces"
-          (ngModelChange)="dataChanged(i, 'pieces', $event)"
-        />
-      </td>
-      <td class="background2 dark-border">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.boxes"
-          (ngModelChange)="dataChanged(i, 'boxes', $event)"
-        />
-      </td>
-      <td class="background5">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.pallets1"
-          (ngModelChange)="dataChanged(i, 'pallets1', $event)"
-        />
-      </td>
-      <td class="background5">
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="row.pallets2"
-          (ngModelChange)="dataChanged(i, 'pallets2', $event)"
-        />
-      </td>
-      <td class="background3 dark-border">
-        <div class="{{ row.boxes > row.calcBoxes ? 'highlight' : '' }}">
-          {{ row.calcBoxes || 0 }}
-        </div>
-        <small *ngIf="row.calcBoxes"
-          >{{ row.boxPerPallet1 }}&times;{{ row.pallets1 }} +
-          {{ row.boxPerPallet2 }}&times;{{ row.pallets2 }}
-        </small>
-      </td>
-      <td class="background3 dark-border">
-        <div class="{{ row.sqmt > row.calcSqmt ? 'highlight' : '' }}">
-          {{ row.calcSqmt || 0 }}
-        </div>
-        <small *ngIf="row.calcSqmt"
-          >{{ row.calcBoxes }}&times;{{ row.sqmtPerBox }}
-        </small>
-      </td>
-      <td class="background3 dark-border">
-        <div>{{ row.calcPercentage || 0 }}%</div>
-        <small *ngIf="row.calcPercentage"
-          >({{ row.calcBoxes }}/{{ row.boxPerContainer }})&times;100
-        </small>
-      </td>
-      <td class="background3 dark-border">
-        <div>{{ row.calcWeight || 0 }}</div>
-        <small *ngIf="row.calcWeight"
-          >{{ row.calcBoxes }}&times;{{ row.weightPerBox }}
-        </small>
-      </td>
-      <td class="background3 dark-border">
-        <div>
-          {{ row.calcContainers || 0 }}
-        </div>
-        <small *ngIf="row.calcContainers"
-          >{{ row.calcBoxes }}/{{ row.boxPerContainer }}
-        </small>
-      </td>
-    </tr>
-    <tr>
-      <th>
-        <button style="font-size: 20px; color: green" (click)="onAddClick()">
-          +
-        </button>
-      </th>
-      <th class="dark-border"></th>
-      <th class="background4" style="text-align: center" colspan="6">TOTAL</th>
-      <th class="background4 dark-border">{{ dataTotal.totalSqmt }}</th>
-      <th class="background4 dark-border">{{ dataTotal.totalPieces }}</th>
-      <th class="background4 dark-border">{{ dataTotal.totalBoxes }}</th>
-      <th class="background4">
-        {{ dataTotal.totalPallets1 }}
-      </th>
-      <th class="background4">
-        {{ dataTotal.totalPallets2 }}
-      </th>
-      <th class="background4 dark-border">
-        {{ dataTotal.totalCalcBoxes }}
-      </th>
-      <th class="background4 dark-border">
-        {{ dataTotal.totalCalcSqmt }}
-      </th>
-      <th class="background4 dark-border">
-        {{ dataTotal.totalCalcPercentage }}%
-      </th>
-      <th class="background4 dark-border">
-        {{ dataTotal.totalCalcWeight }}
-      </th>
-      <th class="background4 dark-border">
-        {{ dataTotal.totalCalcContainers }}
-      </th>
-    </tr>
-  </table>
-  <div style="padding: 8px 0px">
-    <div style="display: inline-block; margin-right: 8px">
-      <b>Total Rows: {{ dataRows.length }}</b>
+            <div class="half-width">
+              <span>Pallets/Container (1)</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.givenPalletPerContainer1"
+                (ngModelChange)="dataChanged(i, 'givenPalletPerContainer1')"
+              />
+            </div>
+            <br />
+
+            <div class="half-width">
+              <span>Boxes/Pallet (2)</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.givenBoxPerPallet2"
+                (ngModelChange)="dataChanged(i, 'givenBoxPerPallet2')"
+              />
+            </div>
+
+            <div class="half-width">
+              <span>Pallets/Container (2)</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.givenPalletPerContainer2"
+                (ngModelChange)="dataChanged(i, 'givenPalletPerContainer2')"
+              />
+            </div>
+
+            <div class="full-width">
+              <span>Boxes/Container</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.givenBoxPerContainer"
+                (ngModelChange)="dataChanged(i, 'givenBoxPerContainer')"
+              />
+            </div>
+
+            <div class="full-width">
+              <span>Sqmt/Box</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.givenSqmtPerBox"
+                (ngModelChange)="dataChanged(i, 'givenSqmtPerBox')"
+              />
+            </div>
+
+            <div class="full-width">
+              <span>Pieces/Box</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.givenPiecesPerBox"
+                (ngModelChange)="dataChanged(i, 'givenPiecesPerBox')"
+              />
+            </div>
+          </td>
+          <td>
+            <div class="full-width">
+              <span>Pallets (1)</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.reqPallet1"
+                (ngModelChange)="dataChanged(i, 'reqPallet1')"
+              />
+            </div>
+
+            <div class="full-width">
+              <span>Pallets (2)</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.reqPallet2"
+                (ngModelChange)="dataChanged(i, 'reqPallet2')"
+              />
+            </div>
+
+            <div class="full-width">
+              <span>Boxes</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.reqBoxes"
+                (ngModelChange)="dataChanged(i, 'reqBoxes')"
+              />
+            </div>
+
+            <div class="full-width">
+              <span>Sqmt</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.reqSqmt"
+                (ngModelChange)="dataChanged(i, 'reqSqmt')"
+              />
+            </div>
+
+            <div class="full-width">
+              <span>Pieces</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.reqPieces"
+                (ngModelChange)="dataChanged(i, 'reqPieces')"
+              />
+            </div>
+
+            <div class="full-width">
+              <span>Containers</span>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.reqContainers"
+                (ngModelChange)="dataChanged(i, 'reqContainers')"
+              />
+            </div>
+          </td>
+          <td>
+            {{ row.calcBoxes || "" }}
+          </td>
+          <td>
+            {{ row.calcContainers || "" }}
+          </td>
+          <td>
+            <div *ngIf="row.givenBoxPerPallet1">
+              {{ row.givenBoxPerPallet1 }} &times;
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.pallet1"
+                (ngModelChange)="dataChanged(i, 'pallet1')"
+                style="width: 60px"
+              />
+            </div>
+            <div *ngIf="row.givenBoxPerPallet2">
+              {{ row.givenBoxPerPallet2 }} &times;
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="row.pallet2"
+                (ngModelChange)="dataChanged(i, 'pallet2')"
+                style="width: 60px"
+              />
+            </div>
+            <hr *ngIf="row.givenBoxPerPallet1 || row.givenBoxPerPallet2" />
+            <div
+              [ngStyle]="{ color: row.boxes < row.calcBoxes ? 'red' : null }"
+            >
+              {{ row.boxes || "" }}
+            </div>
+          </td>
+          <td>
+            <div>{{ row.containers || "" }}</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button style="color: green" (click)="onAddClick()">+</button>
+          </td>
+          <td colspan="3"></td>
+          <td></td>
+          <td></td>
+          <td>
+            <b *ngIf="columnTotals.boxes">{{ columnTotals.boxes }}</b>
+          </td>
+          <td>
+            <b *ngIf="columnTotals.containers">{{ columnTotals.containers }}</b>
+          </td>
+        </tr>
+      </table>
     </div>
-    <div style="display: inline-block">
-      <button (click)="onDownloadClick()">Download CSV</button>
+
+    <br />
+    <br />
+    <div *ngFor="let container of containersBreakup; let i = index">
+      <div class="table-container" style="display: inline-block">
+        <table>
+          <tr>
+            <th colspan="4" style="text-align: center">
+              CONTAINER {{ i + 1 }}
+            </th>
+          </tr>
+          <tr>
+            <th style="width: 160px">Tile Name</th>
+            <th style="width: 160px">Containers</th>
+            <th style="width: 160px">Boxes</th>
+            <th style="width: 160px">Pallets</th>
+          </tr>
+          <tr *ngFor="let group of container.breakup">
+            <td>{{ group.tileName }}</td>
+            <td>{{ group.containers }}</td>
+            <td>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="group.boxes"
+                (ngModelChange)="containerTableDataChanged(group)"
+              />
+            </td>
+            <td>
+              <div
+                class="invalid-message"
+                innerHtml="{{
+                  getPalletsCombination(group.rowIndex, group.boxes) ||
+                    '<span>Invalid</span>'
+                }}"
+              ></div>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <div
+                class="invalid-message"
+                innerHtml="{{ getBreakupTotal(container) }}"
+              ></div>
+            </td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+      <br />
+      <br />
     </div>
   </div>
-</div>
 
-<div class="login-popup" *ngIf="!loggedIn">
-  <div>
-    <img
-      src="https://www.google.co.in/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
-      height="92px"
-    />
-    <!-- <div style="text-align: center">Enter Password</div> -->
-    <!-- <br /> -->
+  <div class="login-popup" *ngIf="!loggedIn">
     <div>
-      <input
-        type="password"
-        [(ngModel)]="password"
-        (keyup.enter)="onLoginClick()"
+      <img
+        src="https://www.google.co.in/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
+        height="92px"
       />
-      <!-- <button
-        [disabled]="!password"
-        style="padding: 4px 8px; margin-left: 4px"
-        (click)="onLoginClick()"
-      >
-        Login
-      </button> -->
+      <div>
+        <input
+          type="password"
+          [(ngModel)]="password"
+          (keyup.enter)="onLoginClick()"
+        />
+      </div>
     </div>
   </div>
 </div>
