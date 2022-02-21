@@ -7,7 +7,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit {
-  loggedIn = true;
+  loggedIn = false;
   password = '';
   inputRows: any[] = [
     {
