@@ -222,80 +222,80 @@
     <table>
       <tr>
         <td style="vertical-align: top; width: 45%">
-          <h4>CONTAINERS BREAKUP:</h4>
-          <div *ngFor="let container of containersBreakup; let i = index">
-            <div class="table-container" style="display: inline-block">
-              <table class="data-table">
-                <tr>
-                  <th colspan="4" style="text-align: center">
-                    CONTAINER {{ i + 1 }}
-                  </th>
-                </tr>
-                <tr>
-                  <th style="width: 1000px">Tile Name</th>
-                  <th style="width: 1000px">Containers</th>
-                  <th style="width: 1000px">Boxes</th>
-                  <th style="width: 1000px">Pallets</th>
-                </tr>
-                <tr *ngFor="let group of container.breakup">
-                  <td>{{ group.tileName }}</td>
-                  <td>{{ group.containers | number: ".0-8" }}</td>
-                  <td>
-                    <input
-                      type="number"
-                      min="0"
-                      [(ngModel)]="group.boxes"
-                      (ngModelChange)="containerTableDataChanged(group)"
-                    />
-                  </td>
-                  <td>
-                    <div
-                      class="invalid-message"
-                      innerHtml="{{
-                        getPalletsCombination(group.rowIndex, group.boxes) ||
-                          '<span>Invalid</span>'
-                      }}"
-                    ></div>
-                  </td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td>
-                    <div
-                      class="invalid-message"
-                      innerHtml="{{ getBreakupTotal(container) }}"
-                    ></div>
-                  </td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </table>
+          <div *ngIf="containersBreakup && containersBreakup.length">
+            <h4>CONTAINERS BREAKUP:</h4>
+            <div *ngFor="let container of containersBreakup; let i = index">
+              <div class="table-container" style="display: inline-block">
+                <table class="data-table">
+                  <tr>
+                    <th colspan="4" style="text-align: center">
+                      CONTAINER {{ i + 1 }}
+                    </th>
+                  </tr>
+                  <tr>
+                    <th style="width: 1000px">Tile Name</th>
+                    <th style="width: 1000px">Containers</th>
+                    <th style="width: 1000px">Boxes</th>
+                    <th style="width: 1000px">Pallets</th>
+                  </tr>
+                  <tr *ngFor="let group of container.breakup">
+                    <td>{{ group.tileName }}</td>
+                    <td>{{ group.containers | number: ".0-8" }}</td>
+                    <td>
+                      <input
+                        type="number"
+                        min="0"
+                        [(ngModel)]="group.boxes"
+                        (ngModelChange)="containerTableDataChanged(group)"
+                      />
+                    </td>
+                    <td>
+                      <div
+                        class="invalid-message"
+                        innerHtml="{{
+                          getPalletsCombination(group.rowIndex, group.boxes) ||
+                            '<span>Invalid</span>'
+                        }}"
+                      ></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>
+                      <div
+                        class="invalid-message"
+                        innerHtml="{{ getBreakupTotal(container) }}"
+                      ></div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </table>
+              </div>
+              <br />
             </div>
-            <br />
           </div>
         </td>
         <td style="width: 10%"></td>
         <td style="vertical-align: top; width: 45%">
-          <h4>TILES BREAKUP:</h4>
-          <div
-            class="table-container"
-            *ngIf="tilesBreakup && tilesBreakup.length"
-            style="display: inline-block"
-          >
-            <table class="data-table">
-              <tr>
-                <th style="width: 1000px">Tile Name</th>
-                <th style="width: 1000px">Present In</th>
-                <th style="width: 1000px">Final Boxes</th>
-              </tr>
-              <tr *ngFor="let tile of tilesBreakup">
-                <td style="vertical-align: top">{{ tile.tileName }}</td>
-                <td style="vertical-align: top">
-                  <div innerHtml="{{ tile.containerPresentIn }}"></div>
-                </td>
-                <td style="vertical-align: top">{{ tile.finalBoxes }}</td>
-              </tr>
-            </table>
+          <div *ngIf="tilesBreakup && tilesBreakup.length">
+            <h4>TILES BREAKUP:</h4>
+            <div class="table-container" style="display: inline-block">
+              <table class="data-table">
+                <tr>
+                  <th style="width: 1000px">Tile Name</th>
+                  <th style="width: 1000px">Present In</th>
+                  <th style="width: 1000px">Final Boxes</th>
+                </tr>
+                <tr *ngFor="let tile of tilesBreakup">
+                  <td style="vertical-align: top">{{ tile.tileName }}</td>
+                  <td style="vertical-align: top">
+                    <div innerHtml="{{ tile.containerPresentIn }}"></div>
+                  </td>
+                  <td style="vertical-align: top">{{ tile.finalBoxes }}</td>
+                </tr>
+              </table>
+            </div>
           </div>
         </td>
       </tr>
