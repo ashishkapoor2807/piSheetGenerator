@@ -1,12 +1,13 @@
 <div class="app-component">
   <div *ngIf="loggedIn">
+    <h4>CLIENT REQUIREMENTS:</h4>
     <div class="table-container">
-      <table>
+      <table class="data-table">
         <tr>
           <th></th>
           <th colspan="2" style="text-align: center">Tile Details</th>
           <th colspan="3" style="text-align: center">Requirements</th>
-          <th colspan="2" style="text-align: center">Calculation</th>
+          <th colspan="2" style="text-align: center">Adjustments</th>
         </tr>
         <tr>
           <th style="width: 30px"></th>
@@ -218,57 +219,87 @@
 
     <br />
     <br />
-    <div *ngFor="let container of containersBreakup; let i = index">
-      <div class="table-container" style="display: inline-block">
-        <table>
-          <tr>
-            <th colspan="4" style="text-align: center">
-              CONTAINER {{ i + 1 }}
-            </th>
-          </tr>
-          <tr>
-            <th style="width: 160px">Tile Name</th>
-            <th style="width: 160px">Containers</th>
-            <th style="width: 160px">Boxes</th>
-            <th style="width: 160px">Pallets</th>
-          </tr>
-          <tr *ngFor="let group of container.breakup">
-            <td>{{ group.tileName }}</td>
-            <td>{{ group.containers }}</td>
-            <td>
-              <input
-                type="number"
-                min="0"
-                [(ngModel)]="group.boxes"
-                (ngModelChange)="containerTableDataChanged(group)"
-              />
-            </td>
-            <td>
-              <div
-                class="invalid-message"
-                innerHtml="{{
-                  getPalletsCombination(group.rowIndex, group.boxes) ||
-                    '<span>Invalid</span>'
-                }}"
-              ></div>
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>
-              <div
-                class="invalid-message"
-                innerHtml="{{ getBreakupTotal(container) }}"
-              ></div>
-            </td>
-            <td></td>
-            <td></td>
-          </tr>
-        </table>
-      </div>
-      <br />
-      <br />
-    </div>
+    <table>
+      <tr>
+        <td style="vertical-align: top; width: 45%">
+          <h4>CONTAINERS BREAKUP:</h4>
+          <div *ngFor="let container of containersBreakup; let i = index">
+            <div class="table-container" style="display: inline-block">
+              <table class="data-table">
+                <tr>
+                  <th colspan="4" style="text-align: center">
+                    CONTAINER {{ i + 1 }}
+                  </th>
+                </tr>
+                <tr>
+                  <th style="width: 1000px">Tile Name</th>
+                  <th style="width: 1000px">Containers</th>
+                  <th style="width: 1000px">Boxes</th>
+                  <th style="width: 1000px">Pallets</th>
+                </tr>
+                <tr *ngFor="let group of container.breakup">
+                  <td>{{ group.tileName }}</td>
+                  <td>{{ group.containers | number: ".0-8" }}</td>
+                  <td>
+                    <input
+                      type="number"
+                      min="0"
+                      [(ngModel)]="group.boxes"
+                      (ngModelChange)="containerTableDataChanged(group)"
+                    />
+                  </td>
+                  <td>
+                    <div
+                      class="invalid-message"
+                      innerHtml="{{
+                        getPalletsCombination(group.rowIndex, group.boxes) ||
+                          '<span>Invalid</span>'
+                      }}"
+                    ></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>
+                    <div
+                      class="invalid-message"
+                      innerHtml="{{ getBreakupTotal(container) }}"
+                    ></div>
+                  </td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </table>
+            </div>
+            <br />
+          </div>
+        </td>
+        <td style="width: 10%"></td>
+        <td style="vertical-align: top; width: 45%">
+          <h4>TILES BREAKUP:</h4>
+          <div
+            class="table-container"
+            *ngIf="tilesBreakup && tilesBreakup.length"
+            style="display: inline-block"
+          >
+            <table class="data-table">
+              <tr>
+                <th style="width: 1000px">Tile Name</th>
+                <th style="width: 1000px">Present In</th>
+                <th style="width: 1000px">Final Boxes</th>
+              </tr>
+              <tr *ngFor="let tile of tilesBreakup">
+                <td style="vertical-align: top">{{ tile.tileName }}</td>
+                <td style="vertical-align: top">
+                  <div innerHtml="{{ tile.containerPresentIn }}"></div>
+                </td>
+                <td style="vertical-align: top">{{ tile.finalBoxes }}</td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+    </table>
   </div>
 
   <div class="login-popup" *ngIf="!loggedIn">

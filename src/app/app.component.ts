@@ -7,7 +7,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit {
-  loggedIn = false;
+  loggedIn = true;
   password = '';
   inputRows: any[] = [
     {
@@ -39,6 +39,7 @@ export class AppComponent implements OnInit {
   }
 
   containersBreakup: any[] = [];
+  tilesBreakup: any[] = [];
 
   ngOnInit(): void {
     const inputRows = localStorage.getItem('inputRows');
@@ -99,6 +100,7 @@ export class AppComponent implements OnInit {
     this.calculateBoxesAndContainers(index, calculatePallets);
     this.calculateColumnTotals();
     this.calculateContainerBreakup();
+    this.saveToLocalStorage();
   }
 
   calculateRequirementsOfAllRows(calculatePallets: boolean): void {
@@ -108,6 +110,7 @@ export class AppComponent implements OnInit {
 
     this.calculateColumnTotals();
     this.calculateContainerBreakup();
+    this.saveToLocalStorage();
   }
 
   calculateBoxesAndContainers(index, calculatePallets: boolean) {
@@ -283,6 +286,7 @@ export class AppComponent implements OnInit {
             rowIndex: index,
             containers: incomingSpace,
             boxes: boxes,
+            pallets: this.getPalletsCombination(index, boxes),
           });
           inputList[index] -= incomingSpace;
           break;
@@ -293,7 +297,7 @@ export class AppComponent implements OnInit {
     this.containersBreakup.forEach((eachContainer) => {
       for (let index = 0; index < inputList.length; index++) {
         const tileSpace = inputList[index];
-        const availableSpace = 1 - eachContainer.total;
+        const availableSpace = parseFloat((1 - eachContainer.total).toFixed(8));
         const incomingSpace = Math.min(availableSpace, tileSpace);
         if (availableSpace > 0 && incomingSpace > 0) {
           eachContainer.total += incomingSpace;
@@ -303,15 +307,19 @@ export class AppComponent implements OnInit {
             rowIndex: index,
             containers: incomingSpace,
             boxes: boxes,
+            pallets: this.getPalletsCombination(index, boxes),
           });
           inputList[index] -= incomingSpace;
         }
       }
     });
+
+    this.adjustContainerBoxesForInvalidPallets();
   }
 
   containerTableDataChanged(group): void {
     group.containers = parseFloat((group.boxes / this.inputRows[group.rowIndex].givenBoxPerContainer).toFixed(8));
+    this.createTilesBreakup();
   }
 
   getBreakupTotal(containerRow): string {
@@ -359,6 +367,47 @@ export class AppComponent implements OnInit {
       return `${givenBoxPerPallet1} x ${pallet1} + ${givenBoxPerPallet2} x ${pallet2}`;
     }
     return '';
+  }
+
+  adjustContainerBoxesForInvalidPallets(): void {
+    this.containersBreakup.forEach((eachContainer) => {
+      eachContainer.breakup.forEach((eachBreakup) => {
+        if (!eachBreakup.pallets) {
+          const originalBoxes = JSON.parse(JSON.stringify(eachBreakup.boxes));
+          for (let newBoxes = eachBreakup.boxes * 2; newBoxes > 0; newBoxes--) {
+            eachBreakup.boxes = newBoxes;
+            this.containerTableDataChanged(eachBreakup);
+            const total = parseFloat((eachContainer.breakup.reduce((total, value) => { return total + value.containers || 0; }, 0)).toFixed(4));
+            const palletsCombination = this.getPalletsCombination(eachBreakup.rowIndex, newBoxes);
+            if (total <= 1 && palletsCombination) {
+              break;
+            } else {
+              eachBreakup.boxes = originalBoxes;
+              this.containerTableDataChanged(eachBreakup);
+            }
+          }
+        }
+      });
+    });
+    this.createTilesBreakup();
+  }
+
+  createTilesBreakup(): void {
+    this.tilesBreakup = [];
+    this.inputRows.forEach((element, index) => {
+      this.tilesBreakup.push({
+        tileName: 'Tile No. ' + (index + 1),
+        containerPresentIn: '',
+        finalBoxes: 0,
+      })
+    });
+
+    this.containersBreakup.forEach((eachContainer, containerIndex) => {
+      eachContainer.breakup.forEach((eachBreakup) => {
+        this.tilesBreakup[eachBreakup.rowIndex].finalBoxes += eachBreakup.boxes;
+        this.tilesBreakup[eachBreakup.rowIndex].containerPresentIn += 'Container ' + (containerIndex + 1) + '<br/>';
+      });
+    });
   }
 
   onLoginClick() {
