@@ -251,6 +251,7 @@ export class AppComponent implements OnInit {
         boxes: null,
         containers: null,
       }
+      localStorage.clear();
     } else {
       this.inputRows.splice(index, 1);
     }
